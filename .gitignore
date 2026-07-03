@@ -1,9 +1,22 @@
+# Virtual Environment
 venv/
+
+# Python Cache
 __pycache__/
 *.pyc
 
+# Hasil preprocessing
 hasil_preprocessing/
 
+# Hasil ROI
+hasil_roi/
+
+# Notebook
 .ipynb_checkpoints/
 
+# VS Code
+.vscode/
+
+# OS
 .DS_Store
+Thumbs.db
