@@ -432,38 +432,38 @@ def generate_feedback(results):
             if issue == "color":
                 if region == "Lips":
                     tips.append("warna lipstik bisa dibuat lebih mendekati referensi")
-                elif "Eye" in region:
+                elif region in ["Left Eye", "Right Eye"]:
                     tips.append("warna eyeshadow dapat disesuaikan agar lebih serupa")
-                elif "Cheek" in region:
-                    tips.append("warna blush dapat dibuat lebih lembut atau lebih dekat dengan referensi")
-                elif "Eyebrow" in region:
+
+                elif region in ["Left Eyebrow", "Right Eyebrow"]:
                     tips.append("warna alis dapat disesuaikan agar lebih menyatu dengan tampilan referensi")
-                else:
-                    tips.append("warna area ini dapat disesuaikan kembali")
+
+                elif region in ["Left Cheek", "Right Cheek"]:
+                    tips.append("warna blush dapat dibuat lebih lembut atau lebih dekat dengan referensi")
 
             elif issue == "texture":
                 if region == "Lips":
                     tips.append("ratakan aplikasi lipstik agar hasilnya terlihat lebih halus")
-                elif "Eye" in region:
+                elif region in ["Left Eye", "Right Eye"]:
                     tips.append("baurkan eyeshadow agar transisinya terlihat lebih halus")
-                elif "Cheek" in region:
-                    tips.append("baurkan blush agar terlihat lebih menyatu dengan kulit")
-                elif "Eyebrow" in region:
+
+                elif region in ["Left Eyebrow", "Right Eyebrow"]:
                     tips.append("rapikan arsiran alis agar hasilnya terlihat lebih natural")
-                else:
-                    tips.append("sebaran makeup dapat dibuat lebih merata")
+
+                elif region in ["Left Cheek", "Right Cheek"]:
+                    tips.append("baurkan blush agar terlihat lebih menyatu dengan kulit")
 
             elif issue == "shape":
                 if region == "Lips":
                     tips.append("rapikan garis bibir agar bentuknya lebih mendekati referensi")
-                elif "Eye" in region:
+                elif region in ["Left Eye", "Right Eye"]:
                     tips.append("rapikan batas eyeshadow atau eyeliner agar bentuknya lebih sesuai")
-                elif "Eyebrow" in region:
+
+                elif region in ["Left Eyebrow", "Right Eyebrow"]:
                     tips.append("sesuaikan bentuk dan ketebalan alis agar lebih seimbang")
-                elif "Cheek" in region:
+
+                elif region in ["Left Cheek", "Right Cheek"]:
                     tips.append("atur posisi blush agar mengikuti area pipi pada referensi")
-                else:
-                    tips.append("bentuk area makeup dapat dirapikan kembali")
 
         if final_score >= 85:
             feedback.append(
