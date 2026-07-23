@@ -30,18 +30,63 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_detection_confidence=0.5
 )
 
+# =========================
+# LANDMARK MATA (REVISI ROI EYESHADOW)
+# =========================
+
+# Kontur mata lengkap (atas + bawah)
+_EYE_RING_A = [
+    33, 7, 163, 144, 145, 153, 154, 155, 133,
+    173, 157, 158, 159, 160, 161, 246
+]
+
+_EYE_RING_B = [
+    263, 249, 390, 373, 374, 380, 381, 382, 362,
+    398, 384, 385, 386, 387, 388, 466
+]
+
+# Bagian bawah alis (batas atas eyeshadow)
+_EYEBROW_LOWER_A = [
+    70, 63, 105, 66, 107,
+    55, 65, 52, 53, 46
+]
+
+_EYEBROW_LOWER_B = [
+    336, 296, 334, 293, 300,
+    285, 295, 282, 283, 276
+]
+
 
 # =========================
 # LANDMARK AREA MAKEUP
 # =========================
+
 REGIONS = {
-    "Lips": [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291],
-    "Left Eye": [33, 7, 163, 144, 145, 153, 154, 155, 133],
-    "Right Eye": [263, 249, 390, 373, 374, 380, 381, 382, 362],
-    "Left Eyebrow": [70, 63, 105, 66, 107],
-    "Right Eyebrow": [336, 296, 334, 293, 300],
-    "Left Cheek": [50, 101, 118, 117, 111, 123],
-    "Right Cheek": [280, 330, 347, 346, 340, 352]
+
+    "Lips": [
+        61, 146, 91, 181, 84,
+        17, 314, 405, 321, 375, 291
+    ],
+
+    # ROI diperluas agar mencakup area eyeshadow
+    "Left Eye": _EYE_RING_A + _EYEBROW_LOWER_A,
+    "Right Eye": _EYE_RING_B + _EYEBROW_LOWER_B,
+
+    "Left Eyebrow": [
+        70, 63, 105, 66, 107
+    ],
+
+    "Right Eyebrow": [
+        336, 296, 334, 293, 300
+    ],
+
+    "Left Cheek": [
+        50, 101, 118, 117, 111, 123
+    ],
+
+    "Right Cheek": [
+        280, 330, 347, 346, 340, 352
+    ]
 }
 
 
@@ -188,23 +233,50 @@ def get_landmarks(image, prefix="referensi"):
 # =========================
 # ROI + MASK
 # =========================
+
 def extract_roi_and_mask(image, landmarks, indices):
-    points = np.array([landmarks[i] for i in indices], dtype=np.int32)
+    """
+    Mengekstraksi ROI menggunakan Convex Hull agar area mata
+    (mata + kelopak + bawah alis) membentuk polygon yang valid.
+    """
+
+    points = np.array(
+        [landmarks[i] for i in indices],
+        dtype=np.int32
+    )
+
+    if len(points) < 3:
+        return None, None
+
+    hull = cv2.convexHull(points)
 
     mask = np.zeros(image.shape[:2], dtype=np.uint8)
-    cv2.fillPoly(mask, [points], 255)
+    cv2.fillConvexPoly(mask, hull, 255)
 
-    masked_image = cv2.bitwise_and(image, image, mask=mask)
+    masked_image = cv2.bitwise_and(
+        image,
+        image,
+        mask=mask
+    )
 
-    x, y, w, h = cv2.boundingRect(points)
+    x, y, w, h = cv2.boundingRect(hull)
+
     roi = masked_image[y:y+h, x:x+w]
     roi_mask = mask[y:y+h, x:x+w]
 
     if roi.size == 0 or roi_mask.size == 0:
         return None, None
 
-    roi = cv2.resize(roi, (224, 224))
-    roi_mask = cv2.resize(roi_mask, (224, 224), interpolation=cv2.INTER_NEAREST)
+    roi = cv2.resize(
+        roi,
+        (224, 224)
+    )
+
+    roi_mask = cv2.resize(
+        roi_mask,
+        (224, 224),
+        interpolation=cv2.INTER_NEAREST
+    )
 
     return roi, roi_mask
 
@@ -564,3 +636,4 @@ def analyze_makeup(reference_img, user_img):
         "reference_overlay": ref_overlay,
         "user_overlay": user_overlay
     }
+
